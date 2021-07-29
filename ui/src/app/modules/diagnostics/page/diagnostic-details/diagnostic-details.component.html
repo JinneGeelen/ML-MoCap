@@ -1,0 +1,55 @@
+<mat-toolbar color="primary">
+  <mat-icon>assessment</mat-icon>
+  <span>Diagnostic results</span>
+  <button mat-raised-button color="accent" [routerLink]="['/diagnostics']">Back</button>
+</mat-toolbar>
+
+<mat-table [dataSource]="results" class="mat-elevation-z8">
+  <ng-container matColumnDef="camera_id">
+    <mat-header-cell *matHeaderCellDef> camera_id </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.camera_id}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="iteration">
+    <mat-header-cell *matHeaderCellDef> iteration </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.iteration}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="time_start_requested">
+    <mat-header-cell *matHeaderCellDef> time_start_requested </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.time_start_requested | date :'HH:mm:ss.SSS'}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="time_recording_started">
+    <mat-header-cell *matHeaderCellDef> time_recording_started </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.time_recording_started | date:'HH:mm:ss.SSS'}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delta_sync">
+    <mat-header-cell *matHeaderCellDef> delta_sync </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.delta_sync}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delta_recording">
+    <mat-header-cell *matHeaderCellDef> delta_recording </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.delta_recording}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delta_start_preview">
+    <mat-header-cell *matHeaderCellDef> delta_start_preview </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.delta_start_preview}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delta_start_recording">
+    <mat-header-cell *matHeaderCellDef> delta_start_recording </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.delta_start_recording}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delta_stop_recording">
+    <mat-header-cell *matHeaderCellDef> delta_stop_recording </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.delta_stop_recording}} </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>

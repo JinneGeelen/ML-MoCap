@@ -1,0 +1,31 @@
+<mat-toolbar color="primary">
+  <span>New study</span>
+</mat-toolbar>
+
+<mat-card class="mat-elevation-z4">
+  <form [formGroup]="studyForm" (ngSubmit)="onSubmit(studyForm.value)">
+    <mat-card-content>
+      <mat-form-field appearance="standard" >
+        <mat-label>Name</mat-label>
+        <input matInput required type="text" formControlName="name" cdkFocusInitial>
+      </mat-form-field>
+
+      <mat-form-field appearance="standard" >
+        <mat-label>Researcher</mat-label>
+        <input matInput required type="text" formControlName="researcher">
+      </mat-form-field>
+
+      <mat-form-field appearance="standard" >
+        <mat-label>Date</mat-label>
+        <input matInput required type="text" formControlName="date">
+      </mat-form-field>
+
+      <mat-checkbox formControlName="emg">EMG</mat-checkbox>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button type="button" [routerLink]="['/studies']">Cancel</button>
+      <button mat-raised-button type="submit" color="accent" [disabled]="!studyForm.valid">Create</button>
+    </mat-card-actions>
+  </form>
+</mat-card>

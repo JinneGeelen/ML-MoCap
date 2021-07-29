@@ -1,0 +1,40 @@
+<mat-toolbar color="primary" class="mat-elevation-z4">
+  <mat-icon>school</mat-icon>
+  <span>Studies</span>
+  <button mat-raised-button color="accent" [routerLink]="['/studies/new']">New</button>
+</mat-toolbar>
+
+<mat-table [dataSource]="studies" class="mat-elevation-z8">
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="researcher">
+    <mat-header-cell *matHeaderCellDef> Researcher </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.researcher}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="date">
+    <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.date}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="emg">
+    <mat-header-cell *matHeaderCellDef> EMG </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.emg}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="add_participant">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element" (click)="onAddParticipantClick($event, element)"> <mat-icon>person_add</mat-icon> </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delete">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element" (click)="onDeleteClick($event, element)"> <mat-icon>delete</mat-icon> </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)"></mat-row>
+</mat-table>

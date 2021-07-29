@@ -1,0 +1,28 @@
+@import 'styles-variables';
+@import 'style-reset';
+
+@import '~@angular/material/theming';
+
+@include mat-core();
+
+@import './styles/themes/black-theme.scss';
+
+// import custom component themes here
+@import 'styles-reset.scss-theme';
+
+@mixin custom-components-theme($theme) {
+  @include my-styles-reset-theme($theme);
+}
+
+@include angular-material-theme($my-black-theme);
+
+.spacer {
+  flex: 1;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+  color: white;
+}

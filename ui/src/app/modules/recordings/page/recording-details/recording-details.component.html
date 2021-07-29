@@ -1,0 +1,71 @@
+<mat-toolbar color="primary">
+  <mat-icon>local_movies</mat-icon>
+  <span>Recording {{(recording$ | async)?.name}}</span>
+  <button mat-raised-button color="accent" [routerLink]="['/recordings/list']">Back</button>
+</mat-toolbar>
+
+<mat-card class="mat-elevation-z4" id="recording-info">
+  <mat-card-title>
+    <mat-icon>local_movies</mat-icon>Details <mat-progress-spinner *ngIf="(recording$ | async)?.state == 'recording' || (recording$ | async)?.state == 'processing'" color="accent" mode="indeterminate" diameter="24"></mat-progress-spinner>
+  </mat-card-title>
+
+  <mat-card-content>
+    <table>
+      <tr>
+        <td>Recording Name:</td>
+        <td>{{(recording$ | async)?.name}}</td>
+      </tr>
+      <tr>
+        <td>Study Name:</td>
+        <td>{{(recording$ | async)?.participant?.study?.name}}</td>
+      </tr>
+      <tr>
+        <td>Researcher:</td>
+        <td>{{(recording$ | async)?.participant?.study?.researcher}}</td>
+      </tr>
+      <tr>
+        <td>Participant Number:</td>
+        <td>{{(recording$ | async)?.participant?.number}}</td>
+      </tr>      
+      <tr>
+        <td>Start Time:</td>
+        <td>{{(recording$ | async)?.start_time | date :'d MMM HH:mm:ss' || '-'}}</td>
+      </tr>
+      <tr>
+        <td>End Time:</td>
+        <td>{{(recording$ | async)?.end_time | date :'d MMM HH:mm:ss' || '-'}}</td>
+      </tr>      
+    </table>
+
+    <ng-container [ngSwitch]="(recording$ | async)?.state">
+      <mat-card-actions *ngSwitchCase="'empty'">
+        <button mat-fab color="accent" (click)="onStartClick()">Start</button>
+      </mat-card-actions>
+
+      <mat-card-actions *ngSwitchCase="'recording'">
+        <button mat-fab color="warn" (click)="onStopClick()">{{recordingButtonText$ | async}}</button>
+      </mat-card-actions>
+
+      <mat-card-actions *ngSwitchCase="'unprocessed'">
+        <button mat-raised-button color="primary" (click)="onDiscardClick()">Discard</button>
+        <div class="spacer"></div>
+        <button mat-raised-button color="accent" (click)="onSaveClick()">Save Recording</button>
+      </mat-card-actions>
+    </ng-container>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="camera mat-elevation-z4" *ngFor="let camera of cameras$ | async" [style.order]="camera.order">
+  <mat-card-title>
+    <mat-icon *ngIf="camera.online">videocam</mat-icon>
+    <mat-icon *ngIf="!camera.online" color="warn">error_outline</mat-icon>
+    {{camera.name || camera.id}}
+  </mat-card-title>
+
+  <mat-card-content>
+    <img *ngIf="camera?.state == 'streaming'" [src]="getStreamUrl(camera)">
+    <p *ngIf="camera?.state != 'streaming'">
+      {{camera?.state?.charAt(0).toUpperCase() + camera?.state?.slice(1)}}
+    </p>
+  </mat-card-content>
+</mat-card>

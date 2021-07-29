@@ -1,0 +1,15 @@
+<mat-toolbar>
+  <span>New diagnostic</span>
+</mat-toolbar>
+
+<form [formGroup]="diagnosticForm" (ngSubmit)="onSubmit(diagnosticForm.value)">
+  <mat-form-field appearance="standard" >
+    <mat-label>Iterations</mat-label>
+    <input matInput required type="number" formControlName="iterations">
+  </mat-form-field>
+
+  <p>
+    <button mat-raised-button [routerLink]="['../']">Cancel</button>
+    <button mat-raised-button type="submit" color="primary">Run</button>
+  </p>
+</form>

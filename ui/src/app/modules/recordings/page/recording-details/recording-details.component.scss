@@ -1,0 +1,141 @@
+:host {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 74px 10px 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-gap: 10px;
+}
+
+mat-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  span {
+    flex: 1
+  }
+}
+
+#recording-info {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+
+  mat-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    mat-card-actions {
+      align-content: stretch;
+      padding: 0 6px;
+
+      button {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.camera {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+
+  mat-card-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      object-fit: scale-down;
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+}
+// #cameras {
+//   grid-column: 2;
+//   grid-row: 1 / span 3;
+
+//   display: grid;
+//   grid-template-columns: repeat(3, 1fr);
+//   grid-template-rows: repeat(2, 1fr);
+//   grid-gap: 5px;
+
+//   mat-card {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: stretch;
+
+//     mat-card-content {
+//       flex: 1;
+//       position: relative;
+//       display: flex;
+//       flex-direction: column;
+//       justify-content: center;
+
+//       img {
+//         display: block;
+//         width: 100%;
+//       }
+
+//       p {
+//         text-align: center;
+//       }
+//     }
+//   }
+// }
+
+.spacer {
+  flex: 1;
+}
+
+mat-card-content {
+  margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+td {
+  padding-bottom: 10px;
+}
+
+td:first-of-type {
+  width: 150px;
+  font-weight: bold;
+}
+
+.mat-fab {
+  width: 72px;
+  height: 72px;
+}
+
+mat-card-title {
+  display: flex;
+
+  mat-icon {
+    margin-right: 6px;
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+}

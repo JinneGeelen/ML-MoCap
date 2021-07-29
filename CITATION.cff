@@ -1,0 +1,24 @@
+# YAML 1.2
+---
+authors: 
+  -
+    family-names: Geelen
+    given-names: Jinne
+    orcid: "https://orcid.org/0000-0001-9346-5787"
+    affiliation: "Department of BioMechanical Engineering, Delft University of Technology"
+  -
+    family-names: Maintz
+    given-names: Tommy
+cff-version: "1.1.0"
+date-released: 2021-07-30
+doi: "10.0000/FIXME"
+keywords: 
+  - "markerless motion capture"
+  - "multi-camera"
+  - "raspberry pi"
+funding: "STW_14906, NWO"
+license: "BSD 3-Clause"
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/JinneGeelen/ML-MoCap.git"
+version: "v0.1"
+...

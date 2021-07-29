@@ -1,0 +1,17 @@
+<mat-toolbar color="primary">
+  <mat-icon>videocam</mat-icon>
+  <span>All Cameras</span>
+  <button mat-raised-button color="accent" [routerLink]="['/cameras/new']">New</button>
+</mat-toolbar>
+
+<mat-card class="mat-elevation-z4" *ngFor="let camera of cameras$ | async" [style.order]="camera.order">
+  <mat-card-title>
+    <mat-icon *ngIf="camera.online">videocam</mat-icon>
+    <mat-icon *ngIf="!camera.online" color="warn">error_outline</mat-icon>
+    {{camera.id}}
+  </mat-card-title>
+
+  <mat-card-content>
+    <img [src]="'http://'+camera.id+'.local:8080/stream/video.mjpeg'">
+  </mat-card-content>
+</mat-card>

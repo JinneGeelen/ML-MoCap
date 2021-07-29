@@ -1,0 +1,60 @@
+<mat-toolbar color="primary" class="mat-elevation-z4">
+  <mat-icon>people</mat-icon>
+  <span>Participants</span>
+
+  <mat-form-field>
+    <mat-select [value]="studyID$ | async" (selectionChange)="onStudySelect($event)">
+      <mat-option value="">All studies</mat-option>
+      <mat-option *ngFor="let study of studies$ | async" [value]="study.id">
+        {{study.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="accent" [routerLink]="['/participants/new']">New</button>
+</mat-toolbar>
+
+<mat-table [dataSource]="participants$" class="mat-elevation-z8">
+  <ng-container matColumnDef="study">
+    <mat-header-cell *matHeaderCellDef> Study </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.study?.name}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="number">
+    <mat-header-cell *matHeaderCellDef> Participant Number </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.number}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="age">
+    <mat-header-cell *matHeaderCellDef> Age </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.age}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="gender">
+    <mat-header-cell *matHeaderCellDef> Gender </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.gender}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="dominant_hand">
+    <mat-header-cell *matHeaderCellDef> Dominant Hand </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.dominant_hand}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="consent_video">
+    <mat-header-cell *matHeaderCellDef> Consent Video </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.consent_video}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="add_recording">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element" (click)="onAddRecordingClick($event, element)"> <mat-icon>add_a_photo</mat-icon> </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delete">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element" (click)="onDeleteClick($event, element)"> <mat-icon>delete</mat-icon> </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)"></mat-row>
+</mat-table>

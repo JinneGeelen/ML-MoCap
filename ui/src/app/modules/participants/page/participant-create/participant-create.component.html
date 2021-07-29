@@ -1,0 +1,53 @@
+<mat-toolbar color="primary">
+  <span>New participant</span>
+</mat-toolbar>
+
+<mat-card class="mat-elevation-z4">
+  <form [formGroup]="participantForm" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <mat-form-field appearance="standard">
+        <mat-label>Study</mat-label>
+        <mat-select required formControlName="study_id">
+          <mat-option *ngFor="let study of studies$ | async" [value]="study.id">
+            {{study.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="standard">
+        <mat-label>Participant Number</mat-label>
+        <input matInput required type="text" formControlName="number" cdkFocusInitial>
+      </mat-form-field>
+
+      <mat-form-field appearance="standard">
+        <mat-label>Age</mat-label>
+        <input matInput required type="number" formControlName="age" cdkFocusInitial>
+      </mat-form-field>
+
+      <mat-form-field appearance="standard">
+        <mat-label>Dominant Hand</mat-label>
+        <mat-select required formControlName="dominant_hand">
+          <mat-option value="Right">Right</mat-option>
+          <mat-option value="Left">Left</mat-option>
+          <mat-option value="Either">Either</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="standard">
+        <mat-label>Gender</mat-label>
+        <mat-select required formControlName="gender">
+          <mat-option value="Female">Female</mat-option>
+          <mat-option value="Male">Male</mat-option>
+          <mat-option value="Other">Other</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="consent_video">Consent Video</mat-checkbox>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button type="button" [routerLink]="['/participants/list']">Cancel</button>
+      <button mat-raised-button type="submit" color="accent" [disabled]="!participantForm.valid">Create</button>
+    </mat-card-actions>
+  </form>
+</mat-card>

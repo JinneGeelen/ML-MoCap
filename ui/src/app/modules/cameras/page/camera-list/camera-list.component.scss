@@ -1,0 +1,54 @@
+:host {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 74px 10px 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-gap: 10px;
+}
+
+mat-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  span {
+    flex: 1
+  }
+}
+
+mat-card-title {
+  display: flex;
+
+  mat-icon {
+    margin-right: 6px;
+  }
+}
+
+mat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+
+  mat-card-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      object-fit: scale-down;
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+}

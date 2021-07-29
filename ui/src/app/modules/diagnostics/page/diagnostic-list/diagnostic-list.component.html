@@ -1,0 +1,25 @@
+<mat-toolbar color="primary">
+  <mat-icon>speed</mat-icon>
+  <span>Diagnostic Runs</span>
+  <button mat-raised-button color="accent" [routerLink]="['./new']">New</button>
+</mat-toolbar>
+
+<mat-table [dataSource]="diagnostics" class="mat-elevation-z8">
+  <ng-container matColumnDef="start_time">
+    <mat-header-cell *matHeaderCellDef> Start Time </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.start_time | date :'dd-MM-yyyy HH:mm:ss.SSS'}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="end_time">
+    <mat-header-cell *matHeaderCellDef> End Time </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.end_time | date :'dd-MM-yyyy HH:mm:ss.SSS'}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="iterations">
+    <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.current_iteration}} / {{element.iterations}} </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)"></mat-row>
+</mat-table>

@@ -1,0 +1,45 @@
+<mat-toolbar color="primary" class="mat-elevation-z4">
+  <mat-icon>movie</mat-icon>
+  <span>Recordings</span>
+
+  <mat-form-field>
+    <mat-select [value]="participantID$ | async" (selectionChange)="onParticipantSelect($event)">
+      <mat-option value="">All participants</mat-option>
+      <mat-option *ngFor="let participant of participants$ | async" [value]="participant.id">
+        {{participant.number}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="accent" [routerLink]="['/recordings/new']">New</button>
+</mat-toolbar>
+
+<mat-table [dataSource]="recordings$" class="mat-elevation-z8">
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="participant">
+    <mat-header-cell *matHeaderCellDef> Participant </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.participant?.number}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="start_time">
+    <mat-header-cell *matHeaderCellDef> Start time </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.start_time}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="end_time">
+    <mat-header-cell *matHeaderCellDef> End time </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.end_time}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="delete">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element" (click)="onDeleteClick($event, element)"> <mat-icon>delete</mat-icon> </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)"></mat-row>
+</mat-table>
