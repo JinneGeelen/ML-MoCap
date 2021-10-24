@@ -18,14 +18,14 @@ class CameraController():
 
     recording = False
     diagnostic = False
-    recording_local_base_path = '/home/pi/local/'
-    recording_nfs_base_path = '/home/pi/recordings/{}'.format(os.environ['CAMERA_ID'])
+    recording_local_base_path = '/home/pi/local'
+    recording_nfs_base_path = '/home/pi/recordings'
 
     def get_recording_local_path(self, recording_id):
         return '{}/{}.h264'.format(self.recording_local_base_path, recording_id)
 
     def get_recording_output_path(self, recording_id):
-        return '{}/{}.mp4'.format(self.recording_nfs_base_path, recording_id)
+        return '{}/{}_{}.mp4'.format(self.recording_nfs_base_path, os.environ['CAMERA_ID'], recording_id)
 
     def on_start_recording(self, recording):
         self.stop_uv4l()
