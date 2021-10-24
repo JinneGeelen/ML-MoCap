@@ -1,0 +1,55 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mlmocap-ui
+  namespace: mlmocap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/controller: controller
+      containers:
+        - name: ui
+          image: tommymaintz/mlmocap-ui:latest
+          ports:
+          - containerPort: 80
+            name: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  namespace: mlmocap
+  labels:
+    app: ui
+spec:
+  ports:
+  - port: 80
+    targetPort: web
+  selector:
+    app: ui
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ui
+  namespace: mlmocap
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: ui
+      port: 80

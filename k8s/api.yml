@@ -10,17 +10,17 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: controller
+      app: api
   template:
     metadata:
       labels:
-        app: controller
+        app: api
     spec:
       nodeSelector:
         node-role.kubernetes.io/controller: controller
       containers:
-        - name: controller
-          image: tommymaintz/mlmocap-controller:latest
+        - name: api
+          image: tommymaintz/mlmocap-api:latest
           securityContext:
             privileged: true
           ports:
@@ -31,7 +31,7 @@ spec:
             mountPath: "/home/pi/recordings"
           env:
           - name: DATABASE_URL
-            value: postgresql://picam@database/controller
+            value: postgresql://mlmocap@database/controller
           - name: LOCAL_STORAGE_PATH
             value: /home/pi/recordings/local
           - name: REMOTE_STORAGE_PATH
@@ -44,21 +44,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: controller
+  name: api
   namespace: mlmocap
   labels:
-    app: controller
+    app: api
 spec:
   ports:
   - port: 80
     targetPort: web
   selector:
-    app: controller
+    app: api
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: controller
+  name: api
   namespace: mlmocap
 spec:
   entryPoints:
@@ -67,5 +67,5 @@ spec:
   - match: PathPrefix(`/api`)
     kind: Rule
     services:
-    - name: controller
+    - name: api
       port: 80

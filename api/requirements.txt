@@ -1,6 +1,6 @@
 RPi.GPIO
 databases
-uvicorn
+uvicorn[standard]
 starlette
 sqlalchemy
 asyncpg
