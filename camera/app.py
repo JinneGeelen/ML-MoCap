@@ -32,8 +32,8 @@ async def main():
 
     camera_controller.start_uv4l()
 
-    uri = 'ws://{}:3000/v1/cameras/connect/{}'.format(
-        os.environ['CONTROLLER_HOST'], os.environ['ID'])
+    uri = 'ws://{}/api/cameras/connect/{}'.format(
+        os.environ['CONTROLLER_HOST'], os.environ['CAMERA_ID'])
     async with websockets.connect(uri) as websocket:
         logger.info('Connected to {}'.format(uri))
 

@@ -2,4 +2,3 @@ asyncio
 websockets
 picamera
 requests
-numpy
