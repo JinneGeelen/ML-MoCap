@@ -1,4 +1,4 @@
-FROM balenalib/raspberry-pi-python:3-buster
+FROM balenalib/raspberry-pi-python:3.7-buster
 
 WORKDIR /app
 
