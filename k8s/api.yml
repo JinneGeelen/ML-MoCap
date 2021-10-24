@@ -1,0 +1,71 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mlmocap-api
+  namespace: mlmocap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: controller
+  template:
+    metadata:
+      labels:
+        app: controller
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/controller: controller
+      containers:
+        - name: controller
+          image: tommymaintz/mlmocap-controller:latest
+          securityContext:
+            privileged: true
+          ports:
+          - containerPort: 80
+            name: web
+          volumeMounts:
+          - name: nfs-recordings
+            mountPath: "/home/pi/recordings"
+          env:
+          - name: DATABASE_URL
+            value: postgresql://picam@database/controller
+          - name: LOCAL_STORAGE_PATH
+            value: /home/pi/recordings/local
+          - name: REMOTE_STORAGE_PATH
+            value: /home/pi/recordings/remote
+      volumes:
+      - name: nfs-recordings
+        persistentVolumeClaim:
+          claimName: recordings
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: controller
+  namespace: mlmocap
+  labels:
+    app: controller
+spec:
+  ports:
+  - port: 80
+    targetPort: web
+  selector:
+    app: controller
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: controller
+  namespace: mlmocap
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: PathPrefix(`/api`)
+    kind: Rule
+    services:
+    - name: controller
+      port: 80
