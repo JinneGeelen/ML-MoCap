@@ -1,12 +1,12 @@
-FROM python:3-slim-buster
-
-WORKDIR /usr/src/app
+FROM python:3.9-buster
 
 RUN apt-get update && apt-get install -y gcc libpq-dev
-RUN pip3 install watchdog[watchmedo] pipenv
-COPY Pipfile .
-RUN pipenv install
 
-COPY . .
+WORKDIR /app
 
-CMD [ "pipenv", "run", "python ", "./app.py" ]
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
+COPY . /app
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

@@ -1,5 +1,4 @@
 import databases
-import uvicorn
 import logging
 
 from starlette.applications import Starlette
@@ -61,7 +60,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
-
-# Start the application
-if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=PORT)
