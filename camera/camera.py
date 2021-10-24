@@ -183,7 +183,7 @@ class CameraController():
         logger.info("Starting uv4l service")
         try:
             subprocess.check_output(
-                "sudo systemctl start uv4l_raspicam", stderr=subprocess.STDOUT, shell=True)
+                "echo \"systemctl start uv4l_raspicam\" > /dev/hostpipe ", stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
             logger.error(
                 'Error stopping uv4l service {} {}'.format(e.cmd, e.output))
@@ -193,7 +193,7 @@ class CameraController():
         logger.info("Stopping uv4l service")
         try:
             subprocess.check_output(
-                "sudo systemctl stop uv4l_raspicam", stderr=subprocess.STDOUT, shell=True)
+                "echo \"systemctl stop uv4l_raspicam\" > /dev/hostpipe", stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
             logger.error(
                 'Error starting uv4l service {} {}'.format(e.cmd, e.output))

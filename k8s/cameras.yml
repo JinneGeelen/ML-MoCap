@@ -18,9 +18,13 @@ spec:
       containers:
         - name: camera
           image: tommymaintz/mlmocap-camera:latest
+          securityContext:
+            privileged: true
           volumeMounts:
           - name: nfs-recordings
             mountPath: "/home/pi/recordings"
+          - name: node-pipe
+            mountPath: /dev/hostpipe
           env:
           - name: CAMERA_ID
             valueFrom:
@@ -32,3 +36,7 @@ spec:
       - name: nfs-recordings
         persistentVolumeClaim:
           claimName: recordings
+      - name: node-pipe
+        hostPath:
+          path: /dev/hostpipe
+          type: File
