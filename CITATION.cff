@@ -1,24 +1,33 @@
-# YAML 1.2
----
-authors: 
-  -
-    family-names: Geelen
-    given-names: Jinne
-    orcid: "https://orcid.org/0000-0001-9346-5787"
-    affiliation: "Department of BioMechanical Engineering, Delft University of Technology"
-  -
-    family-names: Maintz
-    given-names: Tommy
-cff-version: "1.1.0"
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Geelen"
+  given-names: "Jinne"
+  orcid: "https://orcid.org/0000-0001-9346-5787"
+- family-names: "Maintz"
+  given-names: "Tommy"
+title: "My Research Software"
+version: 2.0.4
+doi: 10.0000/FIXME
 date-released: 2021-07-30
-doi: "10.0000/FIXME"
+url: "https://github.com/JinneGeelen/ML-MoCap"
 keywords: 
   - "markerless motion capture"
   - "multi-camera"
   - "raspberry pi"
 funding: "STW_14906, NWO"
 license: "BSD 3-Clause"
-message: "If you use this software, please cite it using these metadata."
-repository-code: "https://github.com/JinneGeelen/ML-MoCap.git"
-version: "v0.1"
-...
+preferred-citation:
+  type: inproceedings
+  authors:
+  - family-names: "Geelen"
+    given-names: "Jinne"
+    orcid: "https://orcid.org/0000-0001-9346-5787"
+#   doi: "10.0000/00000"
+  title: "My awesome research software"
+  booktitle: "Booktitle"
+  series: "Series"
+  year: 2021
+  pages: "100-101"
+  publisher: "N"
+  address: "Nn"
