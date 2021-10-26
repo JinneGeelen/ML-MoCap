@@ -1,11 +1,11 @@
 # ML-MoCap
 Markerless Motion Capture Software required to build the low-cost, modular and multi-camera ML-MoCap system.
 
-## Note
+## Disclaimer
 
-This project is still work-in-progress. With lessons learned from the first version of the ML-MoCap we decided to add a few improvements to make it more stable in use. In this list we keep track of the transistion from version 0.1 to the first official release 1.0.
+This project is work-in-progress. With the lessons learned from the first version of the ML-MoCap we decided to add a few improvements to make it more stable in use. In this list we keep track of the transition from version 0.1 to the first official release 1.0.
 
-- [x] Transform from custum services to pre-build Docker applications
+- [x] Transform from custom services to pre-build Docker applications
 - [x] Management by Kubernetes
 - [x] Transition from mountdrive to NFS and SMB
 - [ ] Customized Raspberry Pi OS Image files
