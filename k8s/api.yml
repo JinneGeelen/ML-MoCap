@@ -17,7 +17,7 @@ spec:
         app: api
     spec:
       nodeSelector:
-        node-role.kubernetes.io/controller: controller
+        kubernetes.io/role: controller
       containers:
         - name: api
           image: tommymaintz/mlmocap-api:latest
@@ -27,17 +27,15 @@ spec:
           - containerPort: 80
             name: web
           volumeMounts:
-          - name: nfs-recordings
+          - name: recordings
             mountPath: "/home/pi/recordings"
           env:
           - name: DATABASE_URL
             value: postgresql://mlmocap@database/controller
-          - name: LOCAL_STORAGE_PATH
-            value: /home/pi/recordings/local
-          - name: REMOTE_STORAGE_PATH
-            value: /home/pi/recordings/remote
+          - name: STORAGE_PATH
+            value: /home/pi/recordings
       volumes:
-      - name: nfs-recordings
+      - name: recordings
         persistentVolumeClaim:
           claimName: recordings
 ---

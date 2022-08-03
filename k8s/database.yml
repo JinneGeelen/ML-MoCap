@@ -17,7 +17,7 @@ spec:
         app: database
     spec:
       nodeSelector:
-        node-role.kubernetes.io/controller: controller
+        kubernetes.io/role: controller
       containers:
         - name: database
           image: postgres:latest
@@ -27,8 +27,8 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-          - name: nfs-database
-            mountPath: "/var/lib/postgresql/data"
+          - name: db-data
+            mountPath: /var/lib/postgresql/data
           env:
           - name: POSTGRES_DB
             value: controller
@@ -37,9 +37,10 @@ spec:
           - name: POSTGRES_HOST_AUTH_METHOD
             value: trust
       volumes:
-      - name: nfs-database
-        persistentVolumeClaim:
-          claimName: database
+      - name: db-data
+        hostPath:
+          path: /home/pi/database
+          type: Directory
 ---
 apiVersion: v1
 kind: Service

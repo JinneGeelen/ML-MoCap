@@ -14,17 +14,21 @@ spec:
         app: camera
     spec:
       nodeSelector:
-        node-role.kubernetes.io/camera: camera
+        kubernetes.io/role: camera
       containers:
         - name: camera
           image: tommymaintz/mlmocap-camera:latest
           securityContext:
             privileged: true
+          ports:
+          - containerPort: 8080
+            name: web
+            hostPort: 8080
           volumeMounts:
-          - name: nfs-recordings
+          - name: recordings
             mountPath: "/home/pi/recordings"
-          - name: node-pipe
-            mountPath: /dev/hostpipe
+          # - name: host-pipe
+          #   mountPath: /dev/hostpipe
           env:
           - name: CAMERA_ID
             valueFrom:
@@ -33,10 +37,9 @@ spec:
           - name: CONTROLLER_HOST
             value: api
       volumes:
-      - name: nfs-recordings
+      - name: recordings
         persistentVolumeClaim:
           claimName: recordings
-      - name: node-pipe
-        hostPath:
-          path: /dev/hostpipe
-          type: File
+      # - name: host-pipe
+      #   hostPath:
+      #     path: /home/pi/hostpipe

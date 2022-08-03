@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, timezone
 from rx.subject import Subject
 
 from db import get_db, metadata
-from config import LOCAL_STORAGE_PATH, REMOTE_STORAGE_PATH
+from config import STORAGE_PATH
 
 from controllers.controller import Controller
 from controllers.participants import participant_controller
@@ -21,13 +21,8 @@ from controllers.studies import studies_controller
 
 from gpiozero import LED
 
-#trigger for TMSi Porti, pin1 = 3.3V (GND = pin6)
-trigger = LED("GPIO21") #LED("BOARD40")
-led_red = LED("GPIO5") #LED("BOARD29")
-led_yellow = LED("GPIO6") #LED("BOARD31")
-led_green = LED("GPIO13") #LED("BOARD33")
-led_blue = LED("GPIO19") #LED("BOARD35")
-led_white = LED("GPIO26") #LED("BOARD")
+# trigger for TMSi Porti, pin1 = 3.3V (GND = pin6)
+trigger = LED("GPIO21")  # LED("BOARD40")
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(relativeCreated)6d %(threadName)s %(message)s')
@@ -91,38 +86,33 @@ class RecordingController(Controller):
     async def get_recording_path(self, recording):
         participant = await participant_controller.get(recording.get('participant_id'))
         study = await studies_controller.get(participant.get('study_id'))
-        path = '{}_{}_{}'.format(study.get('name'),
+        path = '{}/{}/{}'.format(study.get('name'),
                                  participant.get('number'),
                                  recording.get('name'))
 
         return path.replace(' ', '_').replace(':', '_').replace('-', '_')
 
-    async def get_local_storage_path(self, recording):
+    async def get_storage_path(self, recording):
         recording_path = await self.get_recording_path(recording)
-        return '{}/{}'.format(LOCAL_STORAGE_PATH, recording_path)
-
-    async def get_remote_storage_path(self, recording):
-        recording_path = await self.get_recording_path(recording)
-        return '{}/{}'.format(REMOTE_STORAGE_PATH, recording_path)
+        return '{}/{}'.format(STORAGE_PATH, recording_path)
 
     async def get_camera_file_path(self, recording, camera_id):
-        local_path = await self.get_local_storage_path(recording)
+        local_path = await self.get_storage_path(recording)
 
         camera = await camera_controller.get(camera_id)
-        return '{}_{}.mp4'.format(local_path, camera.get('name', camera_id).replace(' ', '_'))
+        return '{}/{}.mp4'.format(local_path, camera.get('name', camera_id).replace(' ', '_'))
 
-#new start
-    async def sendtrigger(self, recording):
-        start_time = recording.get('start_time')
+    def send_trigger(self, recording):
+        start_time = datetime.fromisoformat(recording.get('start_time'))
         current_time = datetime.now().astimezone()
 
-        while current_time < start_time and self.recording:
+        while current_time < start_time:
             time.sleep(0.001)
             current_time = datetime.now().astimezone()
+
         trigger.on()
         time.sleep(2)
         trigger.off()
-#new end
 
     async def start(self, recording_id):
         async with self.db.transaction():
@@ -145,11 +135,11 @@ class RecordingController(Controller):
             recording['cameras_recorded'] = cameras_recorded
             recording = await self.update(recording)
 
-            #send trigger to TMSi Porti
-            thread = threading.Thread(
-                target=self.sendtrigger, args=(recording), daemon=True)
+            # send trigger to TMSi Porti
+            thread = threading.Thread(target=self.send_trigger,
+                                      args=[recording], daemon=True)
             thread.start()
-            
+
             return recording
 
     async def stop(self, recording_id):
@@ -196,21 +186,23 @@ class RecordingController(Controller):
             if not recording:
                 return
 
-            local_storage_path = await self.get_local_storage_path(recording)
-            remote_storage_path = await self.get_remote_storage_path(recording)
+            storage_path = await self.get_storage_path(recording)
 
-            if not os.path.exists(remote_storage_path):
-                os.makedirs(remote_storage_path)
+            if not os.path.exists(storage_path):
+                os.makedirs(storage_path)
 
             recording_metadata = await self.get_recording_metadata(recording)
-            metadata_path = '{}/metadata.json'.format(remote_storage_path)
+            metadata_path = '{}/metadata.json'.format(storage_path)
 
             with open(metadata_path, 'w') as file:
                 file.write(json.dumps(recording_metadata, indent=2))
 
             cameras_processing = await camera_controller.send_command({
                 'event': 'process_recording',
-                'data': recording,
+                'data': {
+                    'recording': recording,
+                    'storage_path': storage_path,
+                },
             })
 
             recording['cameras_processing'] = cameras_processing
@@ -222,16 +214,6 @@ class RecordingController(Controller):
 
     async def processed(self, recording_id, camera_id):
         recording = await self.get(recording_id)
-        camera = await camera_controller.get(camera_id)
-
-        source = await self.get_camera_file_path(recording, camera_id)
-        base_path = await self.get_remote_storage_path(recording)
-        dest = '{}/{}.mp4'.format(base_path, camera.get('name', camera_id))
-
-        thread = threading.Thread(
-            target=self.upload, args=(source, dest), daemon=True)
-        thread.start()
-
         async with self.db.transaction():
             await self.db.execute('LOCK TABLE recordings IN SHARE ROW EXCLUSIVE MODE')
 
@@ -247,11 +229,6 @@ class RecordingController(Controller):
             recording = await self.update(recording)
 
         return recording
-
-    def upload(self, source, dest):
-        logger.info('Upload {} to {}'.format(source, dest))
-        shutil.move(source, dest)
-        logger.info('Done uploading {}'.format(dest))
 
     async def get_all(self):
         query = recordings.select()

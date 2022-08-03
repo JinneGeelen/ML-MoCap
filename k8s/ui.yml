@@ -17,7 +17,7 @@ spec:
         app: ui
     spec:
       nodeSelector:
-        node-role.kubernetes.io/controller: controller
+        kubernetes.io/role: controller
       containers:
         - name: ui
           image: tommymaintz/mlmocap-ui:latest

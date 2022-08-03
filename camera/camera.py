@@ -10,29 +10,31 @@ import shutil
 
 from picamera import PiCamera
 from datetime import datetime
+from preview import output
 
 logger = logging.getLogger()
 
+
 class CameraController():
-    camera = None
+    camera = PiCamera(
+        framerate=30,
+        resolution=(800, 600),
+    )
 
     recording = False
     diagnostic = False
     recording_local_base_path = '/home/pi/local'
-    recording_nfs_base_path = '/home/pi/recordings'
 
     def get_recording_local_path(self, recording_id):
         return '{}/{}.h264'.format(self.recording_local_base_path, recording_id)
 
-    def get_recording_output_path(self, recording_id):
-        return '{}/{}_{}.mp4'.format(self.recording_nfs_base_path, os.environ['CAMERA_ID'], recording_id)
+    def get_recording_output_path(self, storage_path):
+        return '{}/{}.mp4'.format(storage_path, os.environ['CAMERA_ID'])
 
     def on_start_recording(self, recording):
-        self.stop_uv4l()
-        self.camera = PiCamera(
-            framerate=30,
-            resolution=(640, 480),
-        )
+        self.stop_preview()
+
+        logger.info('Start recording {}'.format(recording.get('id')))
 
         try:
             if self.recording:
@@ -44,7 +46,7 @@ class CameraController():
                 self.diagnostic = {
                     'diagnostic_id': recording.get('diagnostic_id'),
                     'iteration': recording.get('iteration'),
-                    'camera_id': os.environ['ID'],
+                    'camera_id': os.environ['CAMERA_ID'],
                     'time_start_requested': recording.get('start_time'),
                     'time_socket_received': datetime.now().astimezone().isoformat(),
                 }
@@ -67,7 +69,7 @@ class CameraController():
                 pass
 
             logger.info('Recording id: {}, with recording path: {}'.format(
-                recording.get('id'),recording_path))
+                recording.get('id'), recording_path))
 
             self.recording = True
 
@@ -78,23 +80,23 @@ class CameraController():
 
             if self.recording:
                 self.camera.start_recording(recording_path,
-                    # '/dev/null',
-                    format='h264',
-                    # the highest available h264 encoding level
-                    level='4.2',
-                    # 10 is the highest, 40 the lowest
-                    quality=20,
-                    # include fps headers in the video
-                    sps_timing=True,
-                    # we set this to 1 so that the split_recording splits on the next frame
-                    # intra_period=1,
-                    # this (hopefully) reduces the motion blur
-                    # intra_refresh='both',
-                    # embed enhancement information in the frames
-                    sei=True,
-                    # exposure_mode='sports',
-                    # motion_output = motion_output,
-                )
+                                            # '/dev/null',
+                                            format='h264',
+                                            # the highest available h264 encoding level
+                                            level='4.2',
+                                            # 10 is the highest, 40 the lowest
+                                            quality=20,
+                                            # include fps headers in the video
+                                            sps_timing=True,
+                                            # we set this to 1 so that the split_recording splits on the next frame
+                                            # intra_period=1,
+                                            # this (hopefully) reduces the motion blur
+                                            # intra_refresh='both',
+                                            # embed enhancement information in the frames
+                                            sei=True,
+                                            # exposure_mode='sports',
+                                            # motion_output = motion_output,
+                                            )
 
                 if self.diagnostic:
                     self.diagnostic['time_recording_started'] = datetime.now(
@@ -124,52 +126,53 @@ class CameraController():
                 requests.post(url='http://{}/api/diagnostic_results/'.format(os.environ['CONTROLLER_HOST']),
                               data=json.dumps(self.diagnostic))
 
-            self.camera.close()
-            time.sleep(1)
-            #restart uv4l stream
-            self.start_uv4l()
+            self.start_preview()
 
     def on_stop_recording(self, recording):
         self.recording = False
 
     def on_discard_recording(self, recording):
         recording_path = self.get_recording_local_path(recording.get('id'))
-        output_path = self.get_recording_output_path(recording.get('id'))
         logger.info('Discard the recording {}'.format(recording_path))
 
         try:
             os.remove(recording_path)
-            os.remove(output_path)
         except:
             pass
 
-    def on_process_recording(self, recording):
+    def on_process_recording(self, data):
+        recording = data.get('recording')
         recording_path = self.get_recording_local_path(recording.get('id'))
-        output_path = self.get_recording_output_path(recording.get('id'))
+        output_path = self.get_recording_output_path(data.get('storage_path'))
 
-        logger.info('Process the recording from {} to {}'.format(recording_path, output_path))
+        logger.info('Process the recording from {} to {}'.format(
+            recording_path, output_path))
 
         try:
-            os.makedirs(self.recording_output_base_path)
             os.remove(output_path)
         except:
             pass
 
-        #ToDo:change! hard-coded fps
-        command = "MP4Box -fps 30 -add {} {}".format(
-            recording_path, output_path)
         try:
-            subprocess.check_output(
-                command, stderr=subprocess.STDOUT, shell=True)
-        except subprocess.CalledProcessError as e:
+            # TODD:change! hard-coded fps
+            subprocess.run(
+                ['MP4Box', '-fps', '30', '-add', recording_path, output_path],
+                check=True,
+                text=True,
+            )
+            # logger.info('MP4Box output:\n{}'.format(result.stdout))
+        except Exception as e:
             logger.error(
-                'Error converting h264 to mp4\ncmd: {}\noutput: {}'.format(e.cmd, e.output))
+                'Error converting h264 to mp4\nerror: {}'.format(e))
             return
+
+        logger.info('Processed the recording succesfully'.format(
+            recording_path, output_path))
 
         requests.get(url='http://{}/api/recordings/{}/processed/{}'.format(
             os.environ['CONTROLLER_HOST'],
             recording.get('id'),
-            os.environ['ID']
+            os.environ['CAMERA_ID']
         ))
 
         try:
@@ -180,22 +183,21 @@ class CameraController():
     async def force_stop(self):
         self.recording = False
 
-    def start_uv4l(self):
-        logger.info("Starting uv4l service")
+    def start_preview(self):
         try:
-            subprocess.check_output(
-                "echo \"systemctl start uv4l_raspicam\" > /dev/hostpipe ", stderr=subprocess.STDOUT, shell=True)
+            self.camera.start_recording(output, format='mjpeg')
+            logger.info("Started preview...")
+
         except subprocess.CalledProcessError as e:
             logger.error(
-                'Error stopping uv4l service {} {}'.format(e.cmd, e.output))
+                'Error starting preview {} {}'.format(e.cmd, e.output))
             return
 
-    def stop_uv4l(self):
-        logger.info("Stopping uv4l service")
+    def stop_preview(self):
         try:
-            subprocess.check_output(
-                "echo \"systemctl stop uv4l_raspicam\" > /dev/hostpipe", stderr=subprocess.STDOUT, shell=True)
+            self.camera.stop_recording()
+            logger.info("Stopped preview...")
         except subprocess.CalledProcessError as e:
             logger.error(
-                'Error starting uv4l service {} {}'.format(e.cmd, e.output))
+                'Error stopping preview {} {}'.format(e.cmd, e.output))
             return
