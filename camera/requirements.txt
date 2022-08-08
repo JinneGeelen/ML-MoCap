@@ -1,0 +1,4 @@
+asyncio
+websockets
+picamera
+requests

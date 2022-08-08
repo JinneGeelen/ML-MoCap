@@ -1,5 +1,7 @@
 import asyncio
 import threading
+
+import requests
 import websockets
 import os
 import json
@@ -8,6 +10,7 @@ import signal
 import time
 
 from datetime import datetime, timedelta
+from preview import StreamingHandler, StreamingServer
 from camera import CameraController
 
 logging.basicConfig(level=logging.INFO)
@@ -28,12 +31,13 @@ class GracefulKiller:
 
 
 async def main():
+    logger.info('Starting event loop...')
+
     killer = GracefulKiller()
+    camera_controller.start_preview()
 
-    camera_controller.start_uv4l()
-
-    uri = 'ws://{}:3000/v1/cameras/connect/{}'.format(
-        os.environ['CONTROLLER_HOST'], os.environ['ID'])
+    uri = 'ws://{}/api/cameras/connect/{}'.format(
+        os.environ['CONTROLLER_HOST'], os.environ['CAMERA_ID'])
     async with websockets.connect(uri) as websocket:
         logger.info('Connected to {}'.format(uri))
 
@@ -63,7 +67,16 @@ async def main():
         await camera_controller.force_stop()
 
 
+def start_streaming_server():
+    logger.info('Starting streaming preview server...')
+    address = ('', 8080)
+    server = StreamingServer(address, StreamingHandler)
+    server.serve_forever()
+
+
 # Start the application
 if __name__ == '__main__':
-    logger.info('Starting event loop...')
+    threading.Thread(target=start_streaming_server,
+                     daemon=True).start()
+
     asyncio.run(main())

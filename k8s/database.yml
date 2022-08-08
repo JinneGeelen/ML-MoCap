@@ -1,0 +1,58 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mlmocap-database
+  namespace: mlmocap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      nodeSelector:
+        kubernetes.io/role: controller
+      containers:
+        - name: database
+          image: postgres:latest
+          ports:
+          - containerPort: 5432
+            name: postgres
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - name: db-data
+            mountPath: /var/lib/postgresql/data
+          env:
+          - name: POSTGRES_DB
+            value: controller
+          - name: POSTGRES_USER
+            value: mlmocap
+          - name: POSTGRES_HOST_AUTH_METHOD
+            value: trust
+      volumes:
+      - name: db-data
+        hostPath:
+          path: /home/pi/database
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: mlmocap
+  labels:
+    app: database
+spec:
+  ports:
+  - port: 5432
+    targetPort: postgres
+    protocol: TCP
+  selector:
+    app: database

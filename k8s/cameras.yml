@@ -1,0 +1,45 @@
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: mlmocap-camera
+  namespace: mlmocap
+spec:
+  selector:
+    matchLabels:
+      app: camera
+  template:
+    metadata:
+      labels:
+        app: camera
+    spec:
+      nodeSelector:
+        kubernetes.io/role: camera
+      containers:
+        - name: camera
+          image: tommymaintz/mlmocap-camera:latest
+          securityContext:
+            privileged: true
+          ports:
+          - containerPort: 8080
+            name: web
+            hostPort: 8080
+          volumeMounts:
+          - name: recordings
+            mountPath: "/home/pi/recordings"
+          # - name: host-pipe
+          #   mountPath: /dev/hostpipe
+          env:
+          - name: CAMERA_ID
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: CONTROLLER_HOST
+            value: api
+      volumes:
+      - name: recordings
+        persistentVolumeClaim:
+          claimName: recordings
+      # - name: host-pipe
+      #   hostPath:
+      #     path: /home/pi/hostpipe

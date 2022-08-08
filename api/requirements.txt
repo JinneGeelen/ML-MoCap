@@ -1,0 +1,12 @@
+RPi.GPIO
+databases
+uvicorn[standard]
+starlette
+sqlalchemy
+asyncpg
+pyyaml
+rx
+psycopg2
+shortuuid
+gpiozero
+

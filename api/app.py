@@ -1,5 +1,4 @@
 import databases
-import uvicorn
 import logging
 
 from starlette.applications import Starlette
@@ -12,7 +11,7 @@ from starlette.middleware.cors import CORSMiddleware
 from api import cameras, diagnostic_results, diagnostics, participants, recordings, studies
 from db import get_db, init_tables
 from controllers import camera_controller
-from config import DEBUG, DATABASE_URL, PORT
+from config import DEBUG, DATABASE_URL
 
 
 # Set up logging level globally
@@ -30,17 +29,17 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=['*'])
 
 # Mount all the different API's
-app.mount('/v1/cameras', cameras)
-app.mount('/v1/diagnostic_results', diagnostic_results)
-app.mount('/v1/diagnostics', diagnostics)
-app.mount('/v1/participants', participants)
-app.mount('/v1/recordings', recordings)
-app.mount('/v1/studies', studies)
+app.mount('/api/cameras', cameras)
+app.mount('/api/diagnostic_results', diagnostic_results)
+app.mount('/api/diagnostics', diagnostics)
+app.mount('/api/participants', participants)
+app.mount('/api/recordings', recordings)
+app.mount('/api/studies', studies)
 
 
 # Set up OpenAPI schema
 schemas = SchemaGenerator(
-    {"openapi": "3.0.0", "info": {"title": "PiCam Controller API", "version": "1.0"}}
+    {"openapi": "3.0.0", "info": {"title": "ML-MoCap Controller API", "version": "1.0"}}
 )
 
 
@@ -61,7 +60,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
-
-# Start the application
-if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=PORT)
