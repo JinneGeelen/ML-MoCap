@@ -6,7 +6,7 @@ authors:
   orcid: "https://orcid.org/0000-0001-9346-5787"
 - family-names: "Maintz"
   given-names: "Tommy"
-title: "My Research Software"
+title: "ML-MoCap"
 version: 2.0.4
 doi: 10.0000/FIXME
 date-released: 2021-07-30
@@ -23,11 +23,7 @@ preferred-citation:
   - family-names: "Geelen"
     given-names: "Jinne"
     orcid: "https://orcid.org/0000-0001-9346-5787"
-#   doi: "10.0000/00000"
-  title: "My awesome research software"
-  booktitle: "Booktitle"
-  series: "Series"
+    doi: "10.1109/EMBC46164.2021.9629749"
+  title: "MarkerLess Motion Capture: ML-MoCap, a low-cost modular multi-camera setup."
   year: 2021
-  pages: "100-101"
-  publisher: "N"
-  address: "Nn"
+  publisher: "IEEE (EMBC)"

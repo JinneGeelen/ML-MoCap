@@ -8,7 +8,7 @@ This project is work-in-progress. With the lessons learned from the first versio
 - [x] Transform from custom services to pre-build Docker applications
 - [x] Management by Kubernetes
 - [x] Transition from mountdrive to NFS and SMB
-- [ ] Customized Raspberry Pi OS Image files
+- [x] Customized Raspberry Pi OS Image files
 - [ ] New UI Design
 
 ## Getting started
@@ -28,8 +28,8 @@ Depending on the application or goal the required hardware list will change. Her
 
 The operating system for the Raspberry Pi's will be installed with the Imager tool. Instead of the general Raspberry Pi OS we provide custum images including Docker installation of the required packages. Please follow the instruction documents for a set-by-step guided installation process.
 
-1. [Installation Controller](https://github.com/JinneGeelen/ML-MoCap/blob/feature/v2/Installation_Controller.md)
-2. [Installation Camera Modules](https://github.com/JinneGeelen/ML-MoCap/blob/feature/v2/Installation_CameraModules.md)
+1. [Installation Controller](Installation_Controller.md)
+2. [Installation Camera Modules](Installation_CameraModules.md)
 3. [Using the Application](Manual_WebApplication.md)
 
 ## Code contributors:
